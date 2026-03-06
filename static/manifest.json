@@ -1,0 +1,36 @@
+{
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "tr",
+  "categories": [
+    "utilities"
+  ],
+  "name": "Namaz Vakitleri",
+  "short_name": "Namaz",
+  "description": "Namaz vakitleri ve ezan bildirimleri",
+  "theme_color": "#0f3b94",
+  "background_color": "#f3f4f6",
+  "icons": [
+    {
+      "src": "static/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "static/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "https://namaz.articnc.online/"
+}

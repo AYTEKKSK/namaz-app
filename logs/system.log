@@ -1,0 +1,38 @@
+2026-02-19 21:46:55,222 - INFO - Uygulama baþlatýldý
+2026-02-19 21:46:57,273 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-19 21:46:57,273 - INFO - Added job "check_prayer_times_and_notify" to job store "default"
+2026-02-19 21:46:57,273 - INFO - Scheduler started
+2026-02-19 21:46:57,285 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.20:5000
+2026-02-19 21:46:57,285 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-19 21:47:57,283 - INFO - Running job "check_prayer_times_and_notify (trigger: interval[0:01:00], next run at: 2026-02-19 21:47:57 +03)" (scheduled at 2026-02-19 21:47:57.273295+03:00)
+2026-02-19 21:47:57,284 - INFO - Job "check_prayer_times_and_notify (trigger: interval[0:01:00], next run at: 2026-02-19 21:48:57 +03)" executed successfully
+2026-02-19 21:48:08,020 - INFO - Request from 127.0.0.1 by Anonymous: GET /muzik/api/music/playlists/global [Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac O]
+2026-02-19 21:48:10,096 - INFO - Request completed in 2.076s - Status: 200
+2026-02-19 21:48:10,097 - INFO - 127.0.0.1 - - [19/Feb/2026 21:48:10] "GET /muzik/api/music/playlists/global HTTP/1.1" 200 -
+2026-02-19 21:48:10,311 - INFO - Request from 127.0.0.1 by Anonymous: GET /muzik/api/music/playlists/1/songs [Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac O]
+2026-02-19 21:48:12,369 - INFO - Request completed in 2.057s - Status: 200
+2026-02-19 21:48:12,369 - INFO - 127.0.0.1 - - [19/Feb/2026 21:48:12] "GET /muzik/api/music/playlists/1/songs HTTP/1.1" 200 -
+2026-02-19 21:48:14,268 - INFO - Request from 127.0.0.1 by Anonymous: GET / [Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac O]
+2026-02-19 21:48:14,269 - INFO - Request completed in 0.001s - Status: 302
+2026-02-19 21:48:14,269 - INFO - 127.0.0.1 - - [19/Feb/2026 21:48:14] "[32mGET / HTTP/1.1[0m" 302 -
+2026-02-19 21:48:14,377 - INFO - Request from 127.0.0.1 by Anonymous: GET /dashboard [Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac O]
+2026-02-19 21:48:14,391 - INFO - Request completed in 0.014s - Status: 200
+2026-02-19 21:48:14,391 - INFO - 127.0.0.1 - - [19/Feb/2026 21:48:14] "GET /dashboard HTTP/1.1" 200 -
+2026-02-19 21:48:14,530 - INFO - Request from 127.0.0.1 by Anonymous: GET /api/apps/status [Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac O]
+2026-02-19 21:48:14,531 - INFO - Request completed in 0.000s - Status: 200
+2026-02-19 21:48:14,531 - INFO - 127.0.0.1 - - [19/Feb/2026 21:48:14] "GET /api/apps/status HTTP/1.1" 200 -
+2026-02-19 21:48:23,577 - INFO - Request from 127.0.0.1 by Anonymous: GET /hava-durumu [Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac O]
+2026-02-19 21:48:27,765 - INFO - Request completed in 4.188s - Status: 503
+2026-02-19 21:48:27,766 - INFO - 127.0.0.1 - - [19/Feb/2026 21:48:27] "[35m[1mGET /hava-durumu HTTP/1.1[0m" 503 -
+2026-03-03 03:59:08,618 - INFO - Uygulama baþlatýldý
+2026-03-03 03:59:10,397 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-03 03:59:10,398 - INFO - Added job "check_prayer_times_and_notify" to job store "default"
+2026-03-03 03:59:10,398 - INFO - Scheduler started
+2026-03-03 03:59:11,672 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.20:5000
+2026-03-03 03:59:11,672 - INFO - [33mPress CTRL+C to quit[0m

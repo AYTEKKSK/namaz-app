@@ -1,0 +1,1661 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f3b94">
+    <title>Namaz Vakti</title>
+    <link rel="stylesheet" href="/static/fontawesome/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 100%;
+            height: 100dvh;
+            min-height: 100dvh;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #e5e7eb;
+            color: #111827;
+            min-height: 100dvh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            inset: 0;
+            touch-action: manipulation;
+        }
+        .app-header {
+            background: #f3f4f6;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+            border-bottom: 1px solid rgba(17,24,39,0.08);
+            flex: 0 0 auto;
+        }
+        .back-button {
+            color: #111827;
+            text-decoration: none;
+            background: #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(17,24,39,0.12);
+        }
+        .title { font-size: 18px; font-weight: 700; color: #111827; }
+        .wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 10px;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .hero-card {
+            background: #0f3b94;
+            border-radius: 24px;
+            padding: 18px 16px 16px;
+            color: #ffffff;
+            box-shadow: 0 10px 24px rgba(15,59,148,0.24);
+            margin-bottom: 0;
+            overflow: hidden;
+            min-height: 340px;
+        }
+        .hero-title {
+            font-size: 40px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.1;
+            margin-top: 4px;
+        }
+        .hero-sub {
+            text-align: center;
+            opacity: 0.95;
+            font-size: 20px;
+            margin-top: 4px;
+        }
+        .hero-countdown {
+            text-align: center;
+            font-size: clamp(48px, 13vw, 82px);
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin: 12px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .hero-dates {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 12px;
+        }
+
+        .times-inline {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 2px;
+            margin-top: 8px;
+            width: 100%;
+            align-items: stretch;
+        }
+        .time-chip {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 2px;
+            text-align: left;
+            width: 100%;
+            min-width: 0;
+            padding: 4px 2px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+        }
+        .time-chip .label {
+            font-size: 14px;
+            opacity: 0.92;
+            margin-bottom: 0;
+            white-space: nowrap;
+            line-height: 1.05;
+        }
+        .time-chip .val {
+            font-size: clamp(20px, 4.1vw, 30px);
+            font-weight: 700;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: clip;
+            flex-shrink: 0;
+        }
+        .time-chip.active {
+            color: #22d3ee;
+        }
+
+        .info-card {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid rgba(17,24,39,0.08);
+            margin-bottom: 0;
+            color: #111827;
+        }
+        .info-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .info-sub {
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        .status {
+            background: #f9fafb;
+            border: 1px solid rgba(17,24,39,0.12);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 0;
+            color: #111827;
+            display: none;
+        }
+
+        .today-card {
+            margin-top: 6px;
+            background: #f9fafb;
+            border: 1px solid rgba(17,24,39,0.12);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .today-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .today-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .today-item {
+            background: #ffffff;
+            border: 1px solid rgba(17,24,39,0.08);
+            border-radius: 8px;
+            padding: 8px;
+            min-width: 0;
+        }
+        .imsakiye-main {
+            background: #ecfeff;
+            border-color: rgba(14,165,233,0.28);
+        }
+        .today-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .today-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            border: 1px solid rgba(17,24,39,0.10);
+            border-radius: 18px;
+            padding: 14px;
+        }
+        .mobile-warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .mobile-warning-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mobile-warning-body {
+            font-size: 14px;
+            color: #78350f;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        .mobile-warning-steps {
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .mobile-warning-steps li {
+            margin: 6px 0;
+            color: #78350f;
+            font-size: 13px;
+        }
+        .close-warning {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .feature-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .feature-head-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(17,24,39,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0ea5e9;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+        .feature-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .feature-sub {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .feature-share {
+            color: #6b7280;
+            font-size: 18px;
+        }
+        .feature-body {
+            color: #1f2937;
+            font-size: 17px;
+            line-height: 1.35;
+        }
+        .esma-arabic {
+            text-align: center;
+            font-size: 68px;
+            line-height: 1.1;
+            margin: 8px 0 2px;
+            color: #111827;
+        }
+        .esma-meaning {
+            text-align: center;
+            color: #374151;
+            font-size: 16px;
+        }
+
+        /* Alarm card */
+        .alarm-card {
+            background: #f9fafb;
+            border: 1.5px solid rgba(15,59,148,0.18);
+            border-radius: 16px;
+            padding: 14px 14px 12px;
+            margin-bottom: 0;
+        }
+        .alarm-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .alarm-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #0f3b94;
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+        .alarm-title { font-size: 16px; font-weight: 700; color: #111827; }
+        .alarm-sub   { font-size: 13px; color: #6b7280; margin-top: 1px; }
+        .alarm-body  { display: flex; flex-direction: column; gap: 8px; }
+        .alarm-label { font-size: 14px; color: #374151; font-weight: 500; }
+        .alarm-select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(17,24,39,0.18);
+            background: #fff;
+            font-size: 15px;
+            color: #111827;
+            appearance: auto;
+        }
+        .alarm-perm-btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: #0f3b94;
+            color: #fff;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .alarm-perm-info {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .top-alert {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translate(-50%, -130%);
+            background: #0f3b94;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            z-index: 9999;
+            box-shadow: 0 10px 24px rgba(15,59,148,0.35);
+            transition: transform 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: calc(100vw - 20px);
+            text-align: center;
+        }
+
+        .top-alert.show {
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 640px) {
+            .hero-title { font-size: 34px; }
+            .hero-sub { font-size: 18px; }
+            .hero-countdown { font-size: clamp(44px, 12.5vw, 68px); }
+            .hero-card { min-height: 300px; }
+            .hero-dates { font-size: 13px; }
+            .times-inline { gap: 2px; }
+            .time-chip { padding: 3px 2px; border-radius: 7px; }
+            .time-chip .label { font-size: 13px; }
+            .time-chip .val { font-size: clamp(18px, 4.4vw, 26px); }
+            .info-title { font-size: 18px; }
+            .info-sub { font-size: 13px; }
+            .status { padding: 9px 10px; font-size: 12px; }
+            .today-title { font-size: 15px; }
+            .today-label { font-size: 11px; }
+            .today-value { font-size: 14px; }
+            .feature-title { font-size: 16px; }
+            .feature-body { font-size: 15px; }
+            .esma-arabic { font-size: 58px; }
+            .esma-meaning { font-size: 15px; }
+        }
+
+        @media (max-width: 390px) {
+            .app-header { padding: 10px 12px; }
+            .title { font-size: 16px; }
+            .wrap { padding: 8px; gap: 6px; }
+            .hero-card { padding: 12px 10px; min-height: 270px; }
+            .hero-title { font-size: 30px; }
+            .hero-sub { font-size: 16px; }
+            .hero-countdown { font-size: clamp(38px, 11.2vw, 58px); }
+            .hero-dates { font-size: 12px; }
+            .time-chip { padding: 4px 2px; border-radius: 6px; }
+            .time-chip .label { font-size: 11px; }
+            .time-chip .val { font-size: clamp(15px, 4.1vw, 22px); }
+            .today-grid { gap: 6px; }
+            .today-item { padding: 6px; }
+            .today-label { font-size: 10px; }
+            .today-value { font-size: 13px; }
+            .feature-card { padding: 10px; border-radius: 14px; }
+            .feature-icon { width: 36px; height: 36px; }
+            .feature-title { font-size: 14px; }
+            .feature-sub { font-size: 12px; }
+            .feature-body { font-size: 13px; }
+            .esma-arabic { font-size: 46px; }
+            .esma-meaning { font-size: 13px; }
+        }
+    </style>
+    <!-- PWA -->
+    <link rel="icon" type="image/svg+xml" href="static/icon-192.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f3b94">
+    <link rel="apple-touch-icon" href="static/icon-192.svg">
+    <meta name="application-name" content="Namaz">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Namaz">
+</head>
+<body>
+    <div id="topAlert" class="top-alert"></div>
+    <div class="app-header">
+        
+        <div class="title">Namaz Vakti</div>
+        <div style="width:56px;"></div>
+    </div>
+
+    <div class="wrap">
+        <div class="mobile-warning" id="mobileWarning" style="display:none;">
+            <div class="mobile-warning-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Mobil Bildirimler İçin
+            </div>
+            <div class="mobile-warning-body">
+                📱 <strong id="mobileWarningText">Telefonunuzda bildirim çalışmıyor!</strong>
+            </div>
+            <div class="mobile-warning-steps">
+                <strong>📲 Çözüm (Ana Ekrana Ekleyin):</strong>
+                <ol id="pwaSteps" style="margin: 8px 0 0 20px; padding: 0;">
+                    <!-- iOS/Android adımları JavaScript tarafından eklenecek -->
+                </ol>
+            </div>
+            <button class="close-warning" onclick="closeMobileWarning()">✓ Anladım</button>
+        </div>
+        
+        <div class="hero-card">
+            <div class="hero-title" id="currentPrayerText">-</div>
+            <div class="hero-sub" id="nextPrayerText">Vaktin Çıkmasına</div>
+            <div class="hero-countdown" id="countdownText">00:00:00</div>
+
+            <div class="hero-dates">
+                <div id="dateText">-</div>
+                <div id="hijriText">-</div>
+            </div>
+
+            <div class="times-inline" id="timesContainer">
+                <div class="time-chip"><div class="label">İmsak</div><div class="val">-</div></div>
+                <div class="time-chip"><div class="label">Güneş</div><div class="val">-</div></div>
+                <div class="time-chip"><div class="label">Öğle</div><div class="val">-</div></div>
+                <div class="time-chip"><div class="label">İkindi</div><div class="val">-</div></div>
+                <div class="time-chip"><div class="label">Akşam</div><div class="val">-</div></div>
+                <div class="time-chip"><div class="label">Yatsı</div><div class="val">-</div></div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title" id="locationText">Konum bekleniyor...</div>
+            <div class="info-sub" id="summaryText">Sonraki vakit için hesaplanıyor...</div>
+        </div>
+
+        <div id="statusBox" class="status">Hazır.</div>
+        
+        <button onclick="testNotification()" style="
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.25);
+        ">
+            <i class="fas fa-bell"></i> Bildirim İzni Test Et
+        </button>
+        
+        <button onclick="checkPushAPIStatus()" style="
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+        ">
+            <i class="fas fa-info-circle"></i> Push API Durumu
+        </button>
+
+        <div class="today-card">
+            <div class="today-title">İmsakiye (Bugün)</div>
+            <div class="today-grid">
+                <div class="today-item imsakiye-main">
+                    <div class="today-label">Sahur Saati (İmsak)</div>
+                    <div class="today-value" id="overviewSahur">-</div>
+                </div>
+                <div class="today-item imsakiye-main">
+                    <div class="today-label">İftar Saati (Akşam)</div>
+                    <div class="today-value" id="overviewIftar">-</div>
+                </div>
+                <div class="today-item">
+                    <div class="today-label">Sonraki</div>
+                    <div class="today-value" id="overviewNext">-</div>
+                </div>
+                <div class="today-item">
+                    <div class="today-label">Kalan</div>
+                    <div class="today-value" id="overviewRemaining">-</div>
+                </div>
+                <div class="today-item">
+                    <div class="today-label">Konum</div>
+                    <div class="today-value" id="overviewLocation">-</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Alarm Ayarları -->
+        <div class="alarm-card" id="alarmCard">
+            <div class="alarm-head">
+                <div class="alarm-icon"><i class="fas fa-bell"></i></div>
+                <div>
+                    <div class="alarm-title">Namaz Alarmı</div>
+                    <div class="alarm-sub" id="alarmStatus">Yükleniyor…</div>
+                </div>
+            </div>
+            <div class="alarm-body">
+                <label class="alarm-label" for="alarmSelect">Namaz vakti kaç dakika önce uyarayım?</label>
+                <select id="alarmSelect" class="alarm-select">
+                    <option value="0">Kapalı</option>
+                    <option value="5">5 dakika önce</option>
+                    <option value="10">10 dakika önce</option>
+                    <option value="15">15 dakika önce</option>
+                    <option value="20">20 dakika önce</option>
+                    <option value="30">30 dakika önce</option>
+                </select>
+                <button id="alarmPermBtn" class="alarm-perm-btn" style="display:none;">
+                    <i class="fas fa-bell"></i> Bildirim İzni Ver
+                </button>
+                <div id="alarmPermInfo" class="alarm-perm-info"></div>
+            </div>
+        </div>
+
+        <div class="feature-card" id="imsakSummaryCard">
+            <div class="feature-head">
+                <div class="feature-head-left">
+                    <div class="feature-icon"><i class="fas fa-calendar-star"></i></div>
+                    <div>
+                        <div class="feature-title" id="imsakSummaryHijri">-</div>
+                        <div class="feature-sub" id="imsakSummaryTitle">İmsağa</div>
+                    </div>
+                </div>
+                <div class="feature-share"><i class="fas fa-chart-pie"></i></div>
+            </div>
+            <div class="feature-body" id="imsakSummaryRemaining">-</div>
+        </div>
+
+        <div class="feature-card" id="hadithCard">
+            <div class="feature-head">
+                <div class="feature-head-left">
+                    <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                        <div class="feature-title">Vaktin Hadisi</div>
+                        <div class="feature-sub" id="hadithSource">-</div>
+                    </div>
+                </div>
+                <div class="feature-share"><i class="fas fa-share-alt"></i></div>
+            </div>
+            <div class="feature-body" id="hadithText">-</div>
+        </div>
+
+        <div class="feature-card" id="esmaCard">
+            <div class="feature-head">
+                <div class="feature-head-left">
+                    <div class="feature-icon"><i class="fas fa-star-and-crescent"></i></div>
+                    <div>
+                        <div class="feature-title">Esmaül Hüsna</div>
+                        <div class="feature-sub" id="esmaName">-</div>
+                    </div>
+                </div>
+                <div class="feature-share"><i class="fas fa-share-alt"></i></div>
+            </div>
+            <div class="esma-arabic" id="esmaArabic">-</div>
+            <div class="esma-meaning" id="esmaMeaning">-</div>
+        </div>
+
+    </div>
+
+    <script src="/static/js/prayer-notifier.js?v=20260214-3"></script>
+    <script>
+        const API_BASE = window.location.pathname.startsWith('/namaz') ? '/namaz' : '';
+        const timesContainer = document.getElementById('timesContainer');
+        const statusBox = document.getElementById('statusBox');
+        const locationText = document.getElementById('locationText');
+        const dateText = document.getElementById('dateText');
+        const hijriText = document.getElementById('hijriText');
+        const currentPrayerText = document.getElementById('currentPrayerText');
+        const nextPrayerText = document.getElementById('nextPrayerText');
+        const summaryText = document.getElementById('summaryText');
+        const countdownText = document.getElementById('countdownText');
+        const topAlert = document.getElementById('topAlert');
+        const overviewNext = document.getElementById('overviewNext');
+        const overviewRemaining = document.getElementById('overviewRemaining');
+        const overviewLocation = document.getElementById('overviewLocation');
+        const overviewSahur = document.getElementById('overviewSahur');
+        const overviewIftar = document.getElementById('overviewIftar');
+        const imsakSummaryHijri = document.getElementById('imsakSummaryHijri');
+        const imsakSummaryRemaining = document.getElementById('imsakSummaryRemaining');
+        const hadithSource = document.getElementById('hadithSource');
+        const hadithText = document.getElementById('hadithText');
+        const esmaName = document.getElementById('esmaName');
+        const esmaArabic = document.getElementById('esmaArabic');
+        const esmaMeaning = document.getElementById('esmaMeaning');
+
+        const HADITH_BY_PRAYER = {
+            imsak: {
+                source: 'Müslim, Müsâfirîn, 252',
+                text: 'Sabah namazı, dünya ve içindekilerden hayırlıdır.'
+            },
+            gunes: {
+                source: 'Buhârî, Rikak, 18',
+                text: 'Kolaylaştırın, zorlaştırmayın; müjdeleyin, nefret ettirmeyin.'
+            },
+            ogle: {
+                source: 'Tirmizî, Birr, 60',
+                text: 'İnsanların en hayırlısı, insanlara faydalı olandır.'
+            },
+            ikindi: {
+                source: 'Müslim, Zikir, 38',
+                text: 'Temizlik imanın yarısıdır.'
+            },
+            aksam: {
+                source: 'Buhârî, Savm, 9',
+                text: 'Oruçlunun iki sevinci vardır: İftar ettiği an ve Rabbine kavuştuğu an.'
+            },
+            yatsi: {
+                source: 'Buhârî, Edeb, 31; Müslim, Îmân, 74',
+                text: 'Allah’a ve ahiret gününe iman eden kimse ya hayır söylesin ya sussun.'
+            }
+        };
+
+        const ESMA_BY_PRAYER = {
+            imsak: {
+                name: 'Er-Rahmân',
+                arabic: 'الرَّحْمٰنُ',
+                meaning: 'Dünyada bütün kullarına merhamet eden.'
+            },
+            gunes: {
+                name: 'En-Nûr',
+                arabic: 'النُّورُ',
+                meaning: 'Âlemleri nurlandıran, yol gösteren.'
+            },
+            ogle: {
+                name: 'El-Hakîm',
+                arabic: 'الْحَكِيمُ',
+                meaning: 'Bütün işleri hikmetli ve yerli yerinde olan.'
+            },
+            ikindi: {
+                name: 'El-Kaviyy',
+                arabic: 'الْقَوِيُّ',
+                meaning: 'Gücü sonsuz olan, mutlak kuvvet sahibi.'
+            },
+            aksam: {
+                name: 'Eş-Şekûr',
+                arabic: 'الشَّكُورُ',
+                meaning: 'Az amele çok karşılık veren, kullarına teşekkür eden.'
+            },
+            yatsi: {
+                name: 'El-Celîl',
+                arabic: 'الْجَلِيلُ',
+                meaning: 'Ulu, kudretli, yüce ve azamet sahibi.'
+            }
+        };
+
+        let countdownInterval = null;
+        const uiState = {
+            targetTimestamp: null,
+            targetPrayerName: '',
+            currentPrayerName: '',
+            targetTimeLabel: '',
+            location: null
+        };
+        let autoLocateInProgress = false;
+        let autoLocateSucceeded = false;
+
+        // Mobil platform tespiti
+        function getMobileOS() {
+            const ua = navigator.userAgent;
+            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+                return 'iOS';
+            } else if (/android/i.test(ua)) {
+                return 'Android';
+            }
+            return 'Other';
+        }
+
+        function isPWA() {
+            return window.matchMedia('(display-mode: standalone)').matches ||
+                   window.navigator.standalone ||
+                   document.referrer.includes('android-app://');
+        }
+
+        function showMobileWarning() {
+            const os = getMobileOS();
+            if (os === 'Other' || isPWA()) {
+                return; // Masaüstü veya zaten PWA
+            }
+
+            const warningBox = document.getElementById('mobileWarning');
+            const warningText = document.getElementById('mobileWarningText');
+            const stepsContainer = document.getElementById('pwaSteps');
+
+            if (os === 'iOS') {
+                warningText.textContent = 'iOS Safari bildirimleri sadece Ana Ekrana eklediğinizde çalışır!';
+                stepsContainer.innerHTML = `
+                    <li><i class="fas fa-safari"></i> Safari'de bu sayfayı açın</li>
+                    <li><i class="fas fa-share"></i> Paylaş butonuna tıklayın</li>
+                    <li><i class="fas fa-plus-square"></i> "Ana Ekrana Ekle" seçin</li>
+                    <li><i class="fas fa-mobile-alt"></i> Ana ekrandan uygulamayı açın</li>
+                `;
+            } else if (os === 'Android') {
+                warningText.textContent = 'Bildirimlerin çalışması için Ana Ekrana ekleyin!';
+                stepsContainer.innerHTML = `
+                    <li><i class="fab fa-chrome"></i> Chrome'da bu sayfayı açın</li>
+                    <li><i class="fas fa-ellipsis-v"></i> Menü (3 nokta) > "Ana ekrana ekle"</li>
+                    <li><i class="fas fa-bell"></i> Bildirim izni verin</li>
+                    <li><i class="fas fa-mobile-alt"></i> Ana ekrandan açın</li>
+                `;
+            }
+
+            warningBox.style.display = 'block';
+        }
+
+        function closeMobileWarning() {
+            document.getElementById('mobileWarning').style.display = 'none';
+            localStorage.setItem('prayerMobileWarningClosed', '1');
+        }
+
+        async function testNotification() {
+            try {
+                if (!('Notification' in window)) {
+                    alert('❌ Tarayıcınız bildirim desteklemiyor!');
+                    return;
+                }
+
+                const os = getMobileOS();
+                const pwa = isPWA();
+
+                // iOS ve PWA değilse uyar
+                if (os === 'iOS' && !pwa) {
+                    alert('⚠️ iOS\'ta bildirimlerin çalışması için uygulamayı Ana Ekrana eklemelisiniz!\\n\\nSafari > Paylaş > Ana Ekrana Ekle');
+                    showMobileWarning();
+                    return;
+                }
+
+                // Bildirim izni kontrolü
+                if (Notification.permission === 'denied') {
+                    alert('❌ Bildirim izni engellenmiş!\\n\\nTarayıcı ayarlarından Site İzinleri > Bildirimler = İzin Ver yapın.');
+                    return;
+                }
+
+                // İzin iste
+                if (Notification.permission !== 'granted') {
+                    setStatus('📱 Bildirim izni isteniyor...');
+                    await window.PrayerNotifier.requestNotificationPermission();
+                }
+
+                // Test bildirimi gönder
+                setStatus('✅ Bildirim gönderiliyor...');
+                
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        await registration.showNotification('🕌 Namaz Vakti Test', {
+                            body: '✅ Bildirimler çalışıyor! 20 dk kala ve vakitte bildirim alacaksınız.',
+                            icon: '/static/icon-192.png',
+                            badge: '/static/icon-192.png',
+                            vibrate: [200, 100, 200],
+                            tag: 'test-notification',
+                            requireInteraction: false
+                        });
+                    } else {
+                        new Notification('🕌 Namaz Vakti Test', {
+                            body: '✅ Bildirimler çalışıyor!',
+                            icon: '/static/icon-192.png',
+                            vibrate: [200, 100, 200]
+                        });
+                    }
+                } else {
+                    new Notification('🕌 Namaz Vakti Test', {
+                        body: '✅ Bildirimler çalışıyor!',
+                        icon: '/static/icon-192.png',
+                        vibrate: [200, 100, 200]
+                    });
+                }
+
+                // Ses çal
+                if (window.PrayerNotifier && window.PrayerNotifier.playPreviewSound) {
+                    await window.PrayerNotifier.playPreviewSound();
+                }
+
+                setStatus('✅ Test başarılı! Bildirimler aktif.');
+                showTopAlert('✅ Test bildirimi gönderildi!');
+                
+            } catch (error) {
+                console.error('Test notification error:', error);
+                alert('❌ Hata: ' + (error.message || error));
+                setStatus('❌ Test başarısız: ' + (error.message || error));
+            }
+        }
+        
+        async function checkPushAPIStatus() {
+            let report = '🔍 Push API Durum Raporu:\\n\\n';
+            
+            // 1. PWA Modu
+            const isPWAMode = window.matchMedia('(display-mode: standalone)').matches;
+            report += `📱 PWA Modu: ${isPWAMode ? '✅ Evet' : '❌ Hayır (browser\'da açık)'}\\n`;
+            
+            // 2. Service Worker
+            const hasSW = 'serviceWorker' in navigator;
+            report += `⚙️ Service Worker: ${hasSW ? '✅ Destekleniyor' : '❌ Desteklenmiyor'}\\n`;
+            
+            if (hasSW) {
+                const swController = navigator.serviceWorker.controller;
+                report += `   └─ Aktif: ${swController ? '✅' : '❌'}\\n`;
+            }
+            
+            // 3. Push API
+            const hasPush = 'PushManager' in window;
+            report += `🔔 Push API: ${hasPush ? '✅ Destekleniyor' : '❌ Desteklenmiyor'}\\n`;
+            
+            // 4. Notification Permission
+            report += `🔕 Bildirim İzni: `;
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') report += '✅ Verildi\\n';
+                else if (Notification.permission === 'denied') report += '❌ Engellendi\\n';
+                else report += '⚠️ Henüz sorulmadı\\n';
+            } else {
+                report += '❌ Desteklenmiyor\\n';
+            }
+            
+            // 5. Push Subscription
+            if (hasSW && hasPush) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const subscription = await registration.pushManager.getSubscription();
+                    report += `🔗 Push Subscription: ${subscription ? '✅ Var' : '❌ Yok'}\\n`;
+                    
+                    if (subscription) {
+                        const endpoint = subscription.endpoint;
+                        report += `   └─ Endpoint: ${endpoint.substring(0, 50)}...\\n`;
+                    }
+                } catch (error) {
+                    report += `🔗 Push Subscription: ❌ Kontrol hatası (${error.message})\\n`;
+                }
+            }
+            
+            // 6. iOS Version
+            const ua = navigator.userAgent;
+            const iosMatch = ua.match(/OS (\\d+)_(\\d+)/);
+            if (iosMatch) {
+                const iosVersion = `${iosMatch[1]}.${iosMatch[2]}`;
+                report += `📲 iOS Sürümü: ${iosVersion}\\n`;
+                
+                // iOS 16.4+ gerekli
+                const majorVersion = parseInt(iosMatch[1]);
+                const minorVersion = parseInt(iosMatch[2]);
+                if (majorVersion > 16 || (majorVersion === 16 && minorVersion >= 4)) {
+                    report += `   └─ Push API Desteği: ✅ (16.4+ gerekli)\\n`;
+                } else {
+                    report += `   └─ Push API Desteği: ❌ (iOS 16.4+ gerekli, sizde ${iosVersion})\\n`;
+                }
+            }
+            
+            // 7. Sonuç
+            report += '\\n💡 SONUÇ:\\n';
+            
+            if (!isPWAMode) {
+                report += '❌ PWA modunda değilsiniz!\\n';
+                report += '➡️ Çözüm: Uygulamayı ana ekrana ekleyip oradan açın\\n';
+            } else if (!hasPush) {
+                report += '❌ Push API desteklenmiyor!\\n';
+                report += '➡️ iOS 16.4+ ve Safari gerekli\\n';
+            } else if (Notification.permission !== 'granted') {
+                report += '❌ Bildirim izni yok!\\n';
+                report += '➡️ "Bildirim İzni Test Et" butonuna tıklayın\\n';
+            } else {
+                report += '✅ Temel gereksinimler sağlanıyor\\n';
+                report += 'subscribeToPushNotifications() çalışması gerekir\\n';
+            }
+            
+            alert(report);
+            console.log(report);
+        }
+
+        // ============================================================================
+        // Push API Functions (PWA Kapalıyken Bildirim için)
+        // ============================================================================
+        
+        async function subscribeToPushNotifications() {
+            try {
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    console.log('❌ Push API desteklenmiyor');
+                    return false;
+                }
+
+                // Service Worker'ı al
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Mevcut subscription var mı kontrol et
+                let subscription = await registration.pushManager.getSubscription();
+                
+                if (!subscription) {
+                    // VAPID public key'i al
+                    const vapidResponse = await fetch(API_BASE + '/api/push/vapid-public-key');
+                    const vapidData = await vapidResponse.json();
+                    
+                    if (!vapidData.success || !vapidData.publicKey) {
+                        throw new Error('VAPID key alınamadı');
+                    }
+                    
+                    // Yeni subscription oluştur
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(vapidData.publicKey)
+                    });
+                    
+                    console.log('✅ Push subscription oluşturuldu');
+                }
+                
+                // Backend'e kaydet
+                const location = window.PrayerNotifier && window.PrayerNotifier.getState().location;
+                
+                const response = await fetch(API_BASE + '/api/push/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        subscription: subscription.toJSON(),
+                        location: location || null
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ Push subscription backend\'e kaydedildi');
+                    localStorage.setItem('pushSubscribed', '1');
+                    return true;
+                } else {
+                    console.error('❌ Subscribe error:', result.error);
+                    return false;
+                }
+                
+            } catch (error) {
+                console.error('❌ Push subscription error:', error);
+                return false;
+            }
+        }
+        
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\\-/g, '+')
+                .replace(/_/g, '/');
+            
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        const prayerOrder = [
+            { key: 'imsak', name: 'İmsak' },
+            { key: 'gunes', name: 'Güneş' },
+            { key: 'ogle', name: 'Öğle' },
+            { key: 'ikindi', name: 'İkindi' },
+            { key: 'aksam', name: 'Akşam' },
+            { key: 'yatsi', name: 'Yatsı' }
+        ];
+
+        function setStatus(message) {
+            statusBox.textContent = message;
+        }
+
+        function showTopAlert(message) {
+            if (!topAlert) {
+                return;
+            }
+
+            topAlert.textContent = message;
+            topAlert.classList.add('show');
+            setTimeout(function () {
+                topAlert.classList.remove('show');
+            }, 5000);
+        }
+
+        function showNotificationDiagnostics(prefixText) {
+            if (!window.PrayerNotifier || !window.PrayerNotifier.getNotificationDiagnostics) {
+                return;
+            }
+
+            const d = window.PrayerNotifier.getNotificationDiagnostics();
+            const detail = 'protocol=' + d.protocol + ', secure=' + d.isSecureContext + ', permission=' + d.permission;
+            setStatus((prefixText || 'Bildirim durumu') + ' (' + detail + ')');
+        }
+
+        function chipHtml(name, value, isActive) {
+            const activeClass = isActive ? ' active' : '';
+            return '<div class="time-chip' + activeClass + '"><div class="label">' + name + '</div><div class="val">' + (value || '-') + '</div></div>';
+        }
+
+        function updateOverview(nextText, remainingText, locationName, sahurText, iftarText) {
+            if (overviewNext) {
+                overviewNext.textContent = nextText || '-';
+            }
+            if (overviewRemaining) {
+                overviewRemaining.textContent = remainingText || '-';
+            }
+            if (overviewLocation) {
+                overviewLocation.textContent = locationName || '-';
+            }
+            if (overviewSahur) {
+                overviewSahur.textContent = sahurText || '-';
+            }
+            if (overviewIftar) {
+                overviewIftar.textContent = iftarText || '-';
+            }
+        }
+
+        function formatRemaining(seconds) {
+            if (seconds === null || seconds === undefined) return '-';
+            const safe = Math.max(0, Number(seconds));
+            const hour = Math.floor(safe / 3600);
+            const minute = Math.floor((safe % 3600) / 60);
+            const sec = safe % 60;
+            return String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+        }
+
+        function parseTimeOnDate(baseDate, timeText) {
+            if (!timeText || timeText.indexOf(':') === -1) {
+                return null;
+            }
+            const parts = timeText.split(':');
+            const hour = Number(parts[0]);
+            const minute = Number(parts[1]);
+            if (Number.isNaN(hour) || Number.isNaN(minute)) {
+                return null;
+            }
+            return new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), hour, minute, 0, 0);
+        }
+
+        function getCurrentPrayerName(timings, nowDate) {
+            let currentName = 'İmsak';
+            for (let index = 0; index < prayerOrder.length; index += 1) {
+                const prayer = prayerOrder[index];
+                const prayerDate = parseTimeOnDate(nowDate, timings[prayer.key]);
+                if (prayerDate && nowDate >= prayerDate) {
+                    currentName = prayer.name;
+                }
+            }
+            return currentName;
+        }
+
+        function formatDateForApi(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        function formatFriendlyDuration(seconds) {
+            const safe = Math.max(0, Number(seconds || 0));
+            const hour = Math.floor(safe / 3600);
+            const minute = Math.floor((safe % 3600) / 60);
+            return hour + ' saat ' + minute + ' dakika';
+        }
+
+        function getPrayerKeyByName(prayerName) {
+            const normalized = String(prayerName || '').toLowerCase('tr-TR');
+            if (normalized === 'i̇msak' || normalized === 'imsak') return 'imsak';
+            if (normalized === 'güneş' || normalized === 'gunes') return 'gunes';
+            if (normalized === 'öğle' || normalized === 'ogle') return 'ogle';
+            if (normalized === 'i̇kindi' || normalized === 'ikindi') return 'ikindi';
+            if (normalized === 'akşam' || normalized === 'aksam') return 'aksam';
+            if (normalized === 'yatsı' || normalized === 'yatsi') return 'yatsi';
+            return 'imsak';
+        }
+
+        function updateFeatureCardsByPrayer(data, remainingSeconds, prayerName) {
+            const prayerKey = getPrayerKeyByName(prayerName || uiState.currentPrayerName || uiState.targetPrayerName);
+            const hadith = HADITH_BY_PRAYER[prayerKey] || HADITH_BY_PRAYER.imsak;
+            const esma = ESMA_BY_PRAYER[prayerKey] || ESMA_BY_PRAYER.imsak;
+
+            if (imsakSummaryHijri) {
+                imsakSummaryHijri.textContent = (data.date && data.date.hijri) ? data.date.hijri : '-';
+            }
+            if (imsakSummaryRemaining) {
+                imsakSummaryRemaining.textContent = uiState.targetPrayerName
+                    ? (uiState.targetPrayerName + ' vaktine ' + formatFriendlyDuration(remainingSeconds) + ' kaldı')
+                    : '-';
+            }
+
+            if (hadithSource) {
+                hadithSource.textContent = hadith.source;
+            }
+            if (hadithText) {
+                hadithText.textContent = hadith.text;
+            }
+
+            if (esmaName) {
+                esmaName.textContent = esma.name;
+            }
+            if (esmaArabic) {
+                esmaArabic.textContent = esma.arabic;
+            }
+            if (esmaMeaning) {
+                esmaMeaning.textContent = esma.meaning;
+            }
+        }
+
+
+        async function fetchNextDayImsak(location) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateParam = formatDateForApi(tomorrow);
+            const lat = encodeURIComponent(location.lat);
+            const lon = encodeURIComponent(location.lon);
+
+            const response = await fetch(API_BASE + '/api/prayer-times?lat=' + lat + '&lon=' + lon + '&date=' + encodeURIComponent(dateParam), {
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                throw new Error('Ertesi gün vakitleri alınamadı');
+            }
+
+            const json = await response.json();
+            if (!json.success || !json.timings || !json.timings.imsak) {
+                throw new Error(json.error || 'Ertesi gün imsak bilgisi yok');
+            }
+
+            const imsakDate = parseTimeOnDate(tomorrow, json.timings.imsak);
+            return {
+                time: json.timings.imsak,
+                date: imsakDate
+            };
+        }
+
+        async function updateUi(data) {
+            const timings = data.timings || {};
+            const sahurTime = timings.imsak || '-';
+            const iftarTime = timings.aksam || '-';
+            const now = new Date();
+            const currentPrayerName = getCurrentPrayerName(timings, now);
+            timesContainer.innerHTML = ''
+                + chipHtml('İmsak', timings.imsak, currentPrayerName === 'İmsak')
+                + chipHtml('Güneş', timings.gunes, currentPrayerName === 'Güneş')
+                + chipHtml('Öğle', timings.ogle, currentPrayerName === 'Öğle')
+                + chipHtml('İkindi', timings.ikindi, currentPrayerName === 'İkindi')
+                + chipHtml('Akşam', timings.aksam, currentPrayerName === 'Akşam')
+                + chipHtml('Yatsı', timings.yatsi, currentPrayerName === 'Yatsı');
+
+            const locationName = data.location && data.location.name ? data.location.name : 'Konum bilgisi yok';
+            locationText.textContent = locationName;
+            updateOverview(uiState.targetPrayerName || '-', '-', locationName, sahurTime, iftarTime);
+
+            const greg = data.date && data.date.gregorian ? data.date.gregorian : '-';
+            const hijri = data.date && data.date.hijri ? data.date.hijri : '-';
+            dateText.textContent = greg;
+            hijriText.textContent = hijri;
+            const state = window.PrayerNotifier.getState();
+            const location = {
+                lat: (state.location && state.location.lat) || (data.coordinates && data.coordinates.lat),
+                lon: (state.location && state.location.lon) || (data.coordinates && data.coordinates.lon)
+            };
+            uiState.location = location;
+
+            uiState.currentPrayerName = currentPrayerName;
+            currentPrayerText.textContent = currentPrayerName;
+            nextPrayerText.textContent = 'Vaktin Çıkmasına';
+
+            if (data.nextPrayer) {
+                const nextDate = parseTimeOnDate(now, data.nextPrayer.time);
+                uiState.targetTimestamp = nextDate ? nextDate.getTime() : null;
+                uiState.targetPrayerName = data.nextPrayer.name;
+                uiState.targetTimeLabel = data.nextPrayer.time;
+                const remaining = uiState.targetTimestamp ? Math.floor((uiState.targetTimestamp - Date.now()) / 1000) : data.remainingSeconds;
+                countdownText.textContent = formatRemaining(remaining);
+                summaryText.textContent = data.nextPrayer.name + ' vaktine ' + formatFriendlyDuration(remaining) + ' kaldı';
+                updateOverview(data.nextPrayer.name, formatRemaining(remaining), locationName, sahurTime, iftarTime);
+                updateFeatureCardsByPrayer(data, remaining, currentPrayerName);
+            } else {
+                try {
+                    if (location.lat === undefined || location.lon === undefined) {
+                        throw new Error('Konum bulunamadı');
+                    }
+
+                    const tomorrowImsak = await fetchNextDayImsak(location);
+                    uiState.targetTimestamp = tomorrowImsak.date ? tomorrowImsak.date.getTime() : null;
+                    uiState.targetPrayerName = 'İmsak';
+                    uiState.targetTimeLabel = tomorrowImsak.time;
+                    const remaining = uiState.targetTimestamp ? Math.floor((uiState.targetTimestamp - Date.now()) / 1000) : null;
+                    countdownText.textContent = formatRemaining(remaining);
+                    summaryText.textContent = 'İmsağa ' + formatFriendlyDuration(remaining) + ' kaldı';
+                    updateOverview('İmsak', formatRemaining(remaining), locationName, sahurTime, iftarTime);
+                    updateFeatureCardsByPrayer(data, remaining, currentPrayerName);
+                } catch (error) {
+                    uiState.targetTimestamp = null;
+                    uiState.targetPrayerName = '';
+                    uiState.targetTimeLabel = '';
+                    countdownText.textContent = '-';
+                    summaryText.textContent = 'Ertesi gün vakti alınamadı';
+                    updateOverview('-', '-', locationName, sahurTime, iftarTime);
+                    updateFeatureCardsByPrayer(data, null, currentPrayerName);
+                }
+            }
+        }
+
+        function startCountdownTick() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(function () {
+                if (!uiState.targetTimestamp) {
+                    return;
+                }
+
+                const remaining = Math.floor((uiState.targetTimestamp - Date.now()) / 1000);
+                countdownText.textContent = formatRemaining(remaining);
+                if (remaining >= 0) {
+                    summaryText.textContent = uiState.targetPrayerName + ' vaktine ' + formatFriendlyDuration(remaining) + ' kaldı';
+                    updateOverview(uiState.targetPrayerName, formatRemaining(remaining), locationText.textContent, overviewSahur ? overviewSahur.textContent : '-', overviewIftar ? overviewIftar.textContent : '-');
+                }
+
+                if (remaining <= 0) {
+                    window.PrayerNotifier.refreshPrayerTimes().catch(function () {
+                        setStatus('Vakit yenilenirken hata oluştu');
+                    });
+                }
+            }, 1000);
+        }
+
+        async function autoLocateAndLoad(forceDetect) {
+            if (autoLocateInProgress) {
+                return false;
+            }
+
+            autoLocateInProgress = true;
+            try {
+                const state = window.PrayerNotifier.getState();
+                const hasCachedLocation = state.location && typeof state.location.lat === 'number' && typeof state.location.lon === 'number';
+
+                if (!hasCachedLocation || forceDetect) {
+                    setStatus('Konum otomatik alınıyor...');
+                    await window.PrayerNotifier.detectLocation();
+                }
+
+                await window.PrayerNotifier.refreshPrayerTimes();
+                setStatus('Konum alındı, vakitler yüklendi.');
+                autoLocateSucceeded = true;
+                return true;
+            } catch (error) {
+                autoLocateSucceeded = false;
+                setStatus('Konum otomatik alınamadı. Sayfaya bir kez dokununca tekrar denenecek.');
+                return false;
+            } finally {
+                autoLocateInProgress = false;
+            }
+        }
+
+        function setupAutoLocationFallback() {
+            const oneShotRetry = async function () {
+                if (!autoLocateSucceeded) {
+                    await autoLocateAndLoad(true);
+                }
+            };
+
+            const oneShotPermission = async function () {
+                try {
+                    if ('Notification' in window && Notification.permission === 'default') {
+                        await window.PrayerNotifier.requestNotificationPermission();
+                        setStatus('Bildirim izni verildi.');
+                    }
+                } catch (error) {
+                    showNotificationDiagnostics('Bildirim izni alınamadı');
+                }
+            };
+
+            document.addEventListener('touchstart', oneShotRetry, { once: true, passive: true });
+            document.addEventListener('click', oneShotRetry, { once: true });
+            document.addEventListener('scroll', oneShotRetry, { once: true, passive: true });
+            document.addEventListener('touchstart', oneShotPermission, { once: true, passive: true });
+            document.addEventListener('click', oneShotPermission, { once: true });
+
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && !autoLocateSucceeded) {
+                    oneShotRetry();
+                }
+            });
+
+            setTimeout(function () {
+                if (!autoLocateSucceeded) {
+                    autoLocateAndLoad(false);
+                }
+            }, 1200);
+
+            setTimeout(function () {
+                if (!autoLocateSucceeded) {
+                    autoLocateAndLoad(true);
+                }
+            }, 3500);
+        }
+
+        async function requestNotificationOnFirstOpen() {
+            if (!window.PrayerNotifier || !window.PrayerNotifier.requestNotificationPermission) {
+                return;
+            }
+
+            const promptKey = 'prayerNotifyPromptShownV1';
+            const alreadyPrompted = localStorage.getItem(promptKey) === '1';
+            if (alreadyPrompted) {
+                return;
+            }
+
+            localStorage.setItem(promptKey, '1');
+
+            if (!('Notification' in window) || Notification.permission !== 'default') {
+                return;
+            }
+
+            try {
+                await window.PrayerNotifier.requestNotificationPermission();
+                setStatus('Bildirim izni verildi.');
+            } catch (error) {
+                showNotificationDiagnostics('Bildirim izni alınamadı');
+            }
+        }
+
+        function initAlarmUI() {
+            var alarmSelect   = document.getElementById('alarmSelect');
+            var alarmPermBtn  = document.getElementById('alarmPermBtn');
+            var alarmPermInfo = document.getElementById('alarmPermInfo');
+            var alarmStatus   = document.getElementById('alarmStatus');
+
+            if (!alarmSelect) { return; }
+
+            // Restore saved preference
+            var savedMinutes = window.PrayerNotifier ? window.PrayerNotifier.getAlarmMinutes() : 10;
+            alarmSelect.value = String(savedMinutes);
+
+            // Show notification permission state
+            function updatePermInfo() {
+                if (!('Notification' in window)) {
+                    alarmPermInfo.textContent = 'Bu tarayıcı bildirimleri desteklemiyor.';
+                    alarmSelect.disabled = true;
+                    return;
+                }
+                if (Notification.permission === 'granted') {
+                    alarmPermInfo.textContent = '✅ Bildirim izni verildi. Alarm aktif.';
+                    alarmPermBtn.style.display = 'none';
+                    var mins = parseInt(alarmSelect.value, 10);
+                    alarmStatus.textContent = mins > 0
+                        ? mins + ' dakika önce alarm kurulu'
+                        : 'Alarm kapalı';
+                } else if (Notification.permission === 'denied') {
+                    alarmPermInfo.textContent = '❌ Bildirim izni engellenmiş. Tarayıcı ayarlarından izin verin.';
+                    alarmPermBtn.style.display = 'none';
+                    alarmStatus.textContent = 'Bildirim izni gerekli';
+                } else {
+                    alarmPermInfo.textContent = 'Alarm kullanmak için bildirim izni gerekiyor.';
+                    alarmPermBtn.style.display = 'flex';
+                    alarmStatus.textContent = 'İzin bekleniyor';
+                }
+            }
+
+            updatePermInfo();
+
+            alarmSelect.addEventListener('change', function () {
+                var mins = parseInt(this.value, 10);
+                if (window.PrayerNotifier) {
+                    window.PrayerNotifier.setAlarmMinutes(mins);
+                }
+                updatePermInfo();
+                if (mins > 0 && 'Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                    alarmPermBtn.style.display = 'flex';
+                }
+            });
+
+            if (alarmPermBtn) {
+                alarmPermBtn.addEventListener('click', async function () {
+                    try {
+                        var result = await Notification.requestPermission();
+                        updatePermInfo();
+                        if (result === 'granted' && window.PrayerNotifier) {
+                            // Reschedule with existing data
+                            window.PrayerNotifier.setAlarmMinutes(parseInt(alarmSelect.value, 10));
+                        }
+                    } catch (e) {
+                        alarmPermInfo.textContent = 'İzin alınamadı: ' + (e.message || e);
+                    }
+                });
+            }
+        }
+
+        async function initPage() {
+            // Mobil uyarıyı göster (kapatılmamışsa)
+            if (localStorage.getItem('prayerMobileWarningClosed') !== '1') {
+                setTimeout(showMobileWarning, 2000);
+            }
+
+            if (!window.PrayerNotifier) {
+                setStatus('Prayer notifier yüklenemedi.');
+                return;
+            }
+
+            window.PrayerNotifier.init({
+                onUpdate: function (data) {
+                    updateUi(data).catch(function (error) {
+                        setStatus('Arayüz güncelleme hatası: ' + (error && error.message ? error.message : error));
+                    });
+                    setStatus('Vakitler güncellendi. 20 dk kala ve vakitte bildirim aktif.');
+                },
+                onError: function (error) {
+                    setStatus('Hata: ' + (error && error.message ? error.message : error));
+                },
+                onNotify: function (info) {
+                    setStatus('Bildirim gönderildi: ' + info.body);
+                }
+            });
+
+            initAlarmUI();
+
+            await requestNotificationOnFirstOpen();
+
+            const locationReady = await autoLocateAndLoad(false);
+            setupAutoLocationFallback();
+
+            const started = await window.PrayerNotifier.bootFromStorage({ autoDetectLocation: false });
+            if (!started) {
+                try {
+                    await window.PrayerNotifier.enable();
+                } catch (error) {
+                    if (!locationReady) {
+                        setStatus('Konum alındığında vakitler otomatik güncellenecek.');
+                    }
+                }
+            }
+
+            if (!locationReady && !started) {
+                setStatus('Konum alındığında vakitler otomatik güncellenecek.');
+            }
+            startCountdownTick();
+            
+            // TEST: PWA açıkken her 10 saniyede bir bildirim gönder
+            console.log('🔍 DEBUG: isPWA() =', isPWA(), ', Notification.permission =', Notification.permission);
+            setTimeout(() => {
+                // isPWA kontrolünü geçici olarak kaldırdık - sadece izin kontrolü
+                if (Notification.permission === 'granted') {
+                    console.log('🔔 Test bildirim sistemi başlatıldı (10 saniyede bir)');
+                    console.log('📱 PWA Modu:', isPWA(), '| İzin:', Notification.permission);
+                    
+                    let testCounter = 0;
+                    setInterval(async () => {
+                        testCounter++;
+                        const now = new Date();
+                        const timeStr = now.toLocaleTimeString('tr-TR');
+                        
+                        console.log(`📤 Test bildirimi gönderiliyor #${testCounter} (${timeStr})`);
+                        
+                        try {
+                            if ('serviceWorker' in navigator) {
+                                const registration = await navigator.serviceWorker.getRegistration();
+                                if (registration) {
+                                    await registration.showNotification('🧪 Test Bildirim #' + testCounter, {
+                                        body: `PWA açık ve arka plandayken bildirim çalışıyor! (${timeStr})`,
+                                        icon: '/static/icon-192.png',
+                                        badge: '/static/icon-192.png',
+                                        vibrate: [200, 100, 200],
+                                        tag: 'test-notification-' + testCounter,
+                                        requireInteraction: false,
+                                        data: {
+                                            url: '/prayer-times'
+                                        }
+                                    });
+                                    console.log(`✅ Test bildirimi gönderildi #${testCounter}`);
+                                } else {
+                                    console.warn('⚠️ Service Worker registration bulunamadı');
+                                }
+                            } else {
+                                // Fallback: Normal notification
+                                new Notification('🧪 Test Bildirim #' + testCounter, {
+                                    body: `PWA açık ve arka plandayken bildirim çalışıyor! (${timeStr})`,
+                                    icon: '/static/icon-192.png',
+                                    tag: 'test-' + testCounter
+                                });
+                                console.log(`✅ Test bildirimi gönderildi (fallback) #${testCounter}`);
+                            }
+                        } catch (error) {
+                            console.error('❌ Test bildirim hatası:', error);
+                        }
+                    }, 10000); // 10 saniye
+                    
+                } else {
+                    console.log('⚠️ Bildirim izni yok (', Notification.permission, '), test bildirimleri atlandı');
+                    console.log('ℹ️ PWA Modu:', isPWA());
+                }
+            }, 3000);
+        }
+
+        window.addEventListener('prayer-alert', function (event) {
+            const detail = (event && event.detail) || {};
+            if (!detail.message) {
+                return;
+            }
+
+            if (detail.kind === 'exact') {
+                showTopAlert('🔔 ' + detail.message + ' (' + (detail.prayerTime || '-') + ')');
+            } else {
+                showTopAlert('⏰ ' + detail.message + ' (' + (detail.prayerTime || '-') + ')');
+            }
+        });
+
+        initPage();
+    </script>
+
+<!-- PWA Install Banner -->
+<div id="pwa-install-banner" style="
+    display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:rgba(20,20,30,0.96); color:#fff; border-radius:16px;
+    padding:14px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.45);
+    z-index:99999; align-items:center; gap:14px;
+    font-family:-apple-system,system-ui,sans-serif; font-size:15px;
+    backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.12);
+    max-width:92vw; white-space:nowrap;">
+  <span style="font-size:22px">📲</span>
+  <span>Bu uygulamayı yükle</span>
+  <button id="pwa-install-btn" style="
+      background:linear-gradient(135deg,#667eea,#764ba2); color:#fff;
+      border:none; border-radius:10px; padding:8px 18px; font-size:14px;
+      font-weight:600; cursor:pointer; white-space:nowrap;">
+    Yükle
+  </button>
+  <button id="pwa-install-close" style="
+      background:rgba(255,255,255,0.15); color:#fff; border:none;
+      border-radius:8px; padding:8px 12px; font-size:13px; cursor:pointer;">
+    ✕
+  </button>
+</div>
+<script>
+(function(){
+  const DISMISSED_KEY = 'pwa_install_dismissed';
+  let deferredPrompt = null;
+  const banner = document.getElementById('pwa-install-banner');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const closeBtn = document.getElementById('pwa-install-close');
+
+  // Zaten yuklu mu?
+  if (window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true) return;
+
+  // Daha once kapatildiysa gosterme
+  if (sessionStorage.getItem(DISMISSED_KEY)) return;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.style.display = 'flex';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    banner.style.display = 'none';
+    if (outcome === 'accepted') sessionStorage.setItem(DISMISSED_KEY, '1');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    banner.style.display = 'none';
+    sessionStorage.setItem(DISMISSED_KEY, '1');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    banner.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>
